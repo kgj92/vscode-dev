@@ -1,0 +1,136 @@
+/* 전체 레이아웃 */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* 헤더 스타일 */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-bottom: 2px solid #ccc;
+}
+
+.header-left {
+  /* 메뉴 버튼 위치 */
+}
+
+.header-center .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.header-right {
+  /* 로그인 버튼 위치 */
+}
+
+.btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+
+/* 탭 메뉴 스타일 */
+.tabs {
+  background-color: #f4f4f4;
+  padding: 10px 0;
+  margin-top: 20px;
+}
+
+.tab-list {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tab-item {
+  margin-right: 30px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-item:last-child {
+  margin-right: 0;
+}
+
+.tab-item.active {
+  color: #4CAF50;
+  border-bottom: 3px solid #4CAF50;
+}
+
+.tab-item:hover {
+  color: #4CAF50;
+}
+
+/* 탭 내용 영역 */
+.tab-content .tab-pane {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  margin-top: 20px;
+}
+
+.tab-content .tab-pane.active {
+  display: block;
+}
+
+/* 게시글 영역 */
+.posts {
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.post {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.post h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.post p {
+  margin: 0;
+  white-space: normal; /* 기본적으로 줄바꿈을 허용 */
+  word-wrap: break-word; /* 긴 단어가 자동으로 줄바꿈되게 설정 */
+  overflow-wrap: break-word; /* 동일한 효과 */
+}
+
+/* 모바일 반응형 디자인 */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tabs .tab-list {
+    flex-direction: column;
+  }
+
+  .tab-item {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
