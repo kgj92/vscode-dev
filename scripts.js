@@ -1,4 +1,4 @@
-const serverURL = "https://uniq-server.onrender.com"; // 여기에 실제 서버 주소 입력
+const serverURL = "https://vscode-dev-1.onrender.com"; // 여기에 실제 서버 주소 입력
 
 // 글 불러오기
 fetch(`${serverURL}/posts`)

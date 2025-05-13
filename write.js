@@ -12,7 +12,7 @@ document.getElementById('write-form').addEventListener('submit', async function(
       return;
     }
   
-    const res = await fetch('http://localhost:5000/posts', {
+    const res = await fetch('https://vscode-dev-1.onrender.com', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
