@@ -74,7 +74,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 서버 시작
+// ✅ 여기 딱 한 번만!
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`서버 실행 중: http://localhost:${PORT}`);
