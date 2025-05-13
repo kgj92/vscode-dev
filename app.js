@@ -5,6 +5,33 @@ const registerForm = document.getElementById('register-form');
 if (registerForm) {
   registerForm.addEventListener('submit', async function(e) {
     e.preventDefault();
+    alert("자바스크립트 작동 확인 ✅");
+
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    alert("서버로 요청 보내는 중...");
+
+    const res = await fetch('https://vscode-dev-1.onrender.com/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password })
+    });
+
+    const data = await res.json();
+    alert(data.msg);
+
+    if (res.ok) {
+      window.location.href = 'login.html';
+    }
+  });
+}
+
+const registerForm = document.getElementById('register-form');
+if (registerForm) {
+  registerForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
 
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
