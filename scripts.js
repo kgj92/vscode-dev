@@ -1,18 +1,22 @@
-// 탭 전환 기능
-const tabItems = document.querySelectorAll('.tab-item');
-const tabPanes = document.querySelectorAll('.tab-pane');
+const serverURL = "https://uniq-server.onrender.com"; // 여기에 실제 서버 주소 입력
 
-tabItems.forEach(item => {
-  item.addEventListener('click', function() {
-    // 모든 탭에서 'active' 클래스 제거
-    tabItems.forEach(tab => tab.classList.remove('active'));
-    tabPanes.forEach(pane => pane.classList.remove('active'));
-    
-    // 클릭한 탭에 'active' 클래스 추가
-    item.classList.add('active');
-    
-    // 해당하는 탭 내용에 'active' 클래스 추가
-    const tabContent = document.getElementById(item.getAttribute('data-tab'));
-    tabContent.classList.add('active');
+// 글 불러오기
+fetch(`${serverURL}/posts`)
+  .then(res => res.json())
+  .then(posts => {
+    const container = document.querySelector('.posts');
+    container.innerHTML = ''; // 기존 글 비우기
+    posts.forEach(post => {
+      const el = document.createElement('div');
+      el.className = 'post';
+      el.innerHTML = `
+        <h2>${post.title}</h2>
+        <p>${post.content}</p>
+        <small>작성자: ${post.author} | ${new Date(post.createdAt).toLocaleString()}</small>
+      `;
+      container.appendChild(el);
+    });
+  })
+  .catch(err => {
+    console.error('글 불러오기 실패:', err);
   });
-});
