@@ -1,3 +1,5 @@
+const BASE_URL = 'https://vscode-dev-1.onrender.com';
+
 // 회원가입 처리
 const registerForm = document.getElementById('register-form');
 if (registerForm) {
@@ -8,7 +10,7 @@ if (registerForm) {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    const res = await fetch('https://vscode-dev-1.onrender.com', {
+    const res = await fetch(`${BASE_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password })
@@ -29,7 +31,7 @@ if (loginForm) {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    const res = await fetch('https://vscode-dev-1.onrender.com', {
+    const res = await fetch(`${BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -63,7 +65,7 @@ if (postForm) {
       return;
     }
 
-    const res = await fetch('http://localhost:5000/posts', {
+    const res = await fetch(`${BASE_URL}/posts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
