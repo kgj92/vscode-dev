@@ -1,17 +1,20 @@
-const BASE_URL = 'https://vscode-dev-1.onrender.com';
+const BASE_URL = 'https://vscode-dev-1.onrender.com'; // 너의 백엔드 주소
 
 // ✅ 회원가입 처리
 const registerForm = document.getElementById('register-form');
 if (registerForm) {
   registerForm.addEventListener('submit', async function (e) {
     e.preventDefault();
-    alert("자바스크립트 작동 확인 ✅");
 
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm-password')?.value;
 
-    alert("서버로 요청 보내는 중...");
+    if (confirmPassword !== undefined && password !== confirmPassword) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
 
     try {
       const res = await fetch(`${BASE_URL}/register`, {
@@ -26,8 +29,8 @@ if (registerForm) {
       if (res.ok) {
         window.location.href = 'login.html';
       }
-    } catch (error) {
-      alert('요청 실패: ' + error.message);
+    } catch (err) {
+      alert('❌ 요청 실패: ' + err.message);
     }
   });
 }
@@ -55,7 +58,7 @@ if (loginForm) {
         alert('로그인 성공!');
         window.location.href = 'index.html';
       } else {
-        alert(data.msg);
+        alert(data.msg || '로그인 실패');
       }
     } catch (error) {
       alert('로그인 요청 실패: ' + error.message);
@@ -71,6 +74,7 @@ if (postForm) {
 
     const title = document.getElementById('title').value;
     const content = document.getElementById('content').value;
+    const author = document.getElementById('author')?.value || '익명';
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -80,13 +84,13 @@ if (postForm) {
     }
 
     try {
-      const res = await fetch(`${BASE_URL}/posts`, {
+      const res = await fetch(`${BASE_URL}/write`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, content })
+        body: JSON.stringify({ title, content, author })
       });
 
       const data = await res.json();
@@ -94,7 +98,7 @@ if (postForm) {
         alert('게시글이 등록되었습니다.');
         window.location.href = 'index.html';
       } else {
-        alert(data.msg || '오류가 발생했습니다.');
+        alert(data.msg || '글 등록 실패');
       }
     } catch (error) {
       alert('글쓰기 요청 실패: ' + error.message);
