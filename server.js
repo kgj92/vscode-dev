@@ -56,10 +56,17 @@ app.post('/login', async (req, res) => {
 // 글쓰기
 app.post('/write', async (req, res) => {
   const { title, content, author } = req.body;
+
+  if (!title || !content || !author) {
+    return res.status(400).json({ msg: '모든 필드를 입력하세요.' });
+  }
+
   const post = new Post({ title, content, author });
   await post.save();
+
   res.json({ msg: '글 등록 완료' });
 });
+
 
 // 글 전체 조회
 app.get('/posts', async (req, res) => {
