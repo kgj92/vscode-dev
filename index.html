@@ -6,17 +6,105 @@
   <title>UNIQ 커뮤니티</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #ccc; }
-    .logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
-    .btn { padding: 6px 12px; background-color: #3897f0; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; }
-    .post { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff; }
-    input, textarea { display: block; margin: 10px 0; padding: 10px; width: 100%; max-width: 500px; }
-    button[type="submit"] { padding: 10px 20px; cursor: pointer; }
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
-    .tab-list li { display: inline-block; margin-right: 15px; cursor: pointer; }
-    .tab-item.active a { font-weight: bold; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
+    header {
+      position: relative;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 20px;
+      border-bottom: 1px solid #ccc;
+      background-color: #fff;
+    }
+
+    .logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background-color: #3897f0;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+    .post {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    input, textarea {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    button[type="submit"] {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 20px;
+    }
+
+    .tab-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 15px;
+    }
+
+    .tab-list li {
+      cursor: pointer;
+    }
+
+    .tab-item.active a {
+      font-weight: bold;
+      color: #3897f0;
+    }
+
+    .tab-item a {
+      text-decoration: none;
+      color: #333;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    .tab-content {
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
