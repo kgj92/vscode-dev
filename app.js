@@ -128,3 +128,5 @@ if (postForm) {
     }
   });
 }
+
+localStorage.setItem('username', data.username); // 서버에서 반환된 사용자 이름

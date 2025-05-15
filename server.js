@@ -110,3 +110,4 @@ app.get('/posts/:id', async (req, res) => {
   }
 });
 
+res.json({ token, username: user.username });
