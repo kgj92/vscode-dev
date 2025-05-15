@@ -91,14 +91,12 @@ if (registerForm) {
   });
 }
 
-// ✅ 글쓰기 처리
+// ✅ 글쓰기 처리 (중복 제거, 오류 수정)
 const postForm = document.getElementById('post-form');
 if (postForm) {
   postForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username'); // ✅ 자동 작성자
 
@@ -107,6 +105,9 @@ if (postForm) {
       window.location.href = 'login.html';
       return;
     }
+
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
 
     try {
       const res = await fetch(`${BASE_URL}/write`, {
@@ -119,6 +120,7 @@ if (postForm) {
       });
 
       const data = await res.json();
+
       if (res.ok) {
         alert('게시글이 등록되었습니다.');
         window.location.href = 'index.html';

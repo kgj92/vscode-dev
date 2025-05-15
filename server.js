@@ -54,18 +54,41 @@ app.post('/login', async (req, res) => {
 });
 
 // 글쓰기
-app.post('/write', async (req, res) => {
-  const { title, content, author } = req.body;
+const postForm = document.getElementById('post-form');
+if (postForm) {
+  postForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-  if (!title || !content || !author) {
-    return res.status(400).json({ msg: '모든 필드를 입력하세요.' });
-  }
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username'); // ✅ 여기서 작성자 이름 가져옴
 
-  const post = new Post({ title, content, author });
-  await post.save();
+    if (!token || !username) {
+      alert('로그인이 필요합니다.');
+      window.location.href = 'login.html';
+      return;
+    }
 
-  res.json({ msg: '글 등록 완료' });
-});
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+
+    const res = await fetch('https://vscode-dev-1.onrender.com/write', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, content, author: username }) // ✅ 작성자 자동 포함
+    });
+
+    const data = await res.json();
+    alert(data.msg || '글 등록 실패');
+
+    if (res.ok) {
+      window.location.href = 'index.html';
+    }
+  });
+}
+
 
 
 // 글 전체 조회
