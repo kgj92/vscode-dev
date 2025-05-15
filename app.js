@@ -17,6 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
       localStorage.removeItem('token');
+      localStorage.removeItem('username'); // 로그아웃 시 username도 제거
       alert('로그아웃 되었습니다.');
       window.location.reload();
     });
@@ -43,6 +44,7 @@ if (loginForm) {
 
       if (data.token) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username); // ✅ 사용자 이름 저장
         alert('로그인 성공!');
         window.location.href = 'index.html';
       } else {
@@ -97,10 +99,10 @@ if (postForm) {
 
     const title = document.getElementById('title').value;
     const content = document.getElementById('content').value;
-    const author = document.getElementById('author')?.value || '익명';
-
     const token = localStorage.getItem('token');
-    if (!token) {
+    const username = localStorage.getItem('username'); // ✅ 자동 작성자
+
+    if (!token || !username) {
       alert('로그인이 필요합니다.');
       window.location.href = 'login.html';
       return;
@@ -113,7 +115,7 @@ if (postForm) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, content, author })
+        body: JSON.stringify({ title, content, author: username }) // ✅ 자동 작성자 전송
       });
 
       const data = await res.json();
@@ -128,5 +130,3 @@ if (postForm) {
     }
   });
 }
-
-localStorage.setItem('username', data.username); // 서버에서 반환된 사용자 이름
