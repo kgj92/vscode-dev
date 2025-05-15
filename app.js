@@ -1,39 +1,27 @@
-const BASE_URL = 'https://vscode-dev-1.onrender.com'; // 너의 백엔드 주소
+const BASE_URL = 'https://vscode-dev-1.onrender.com';
 
-// ✅ 회원가입 처리
-const registerForm = document.getElementById('register-form');
-if (registerForm) {
-  registerForm.addEventListener('submit', async function (e) {
-    e.preventDefault();
+// ✅ 로그인 상태에 따라 버튼 토글
+window.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  const loginBtn = document.getElementById('login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
 
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password')?.value;
+  if (token) {
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+  } else {
+    if (loginBtn) loginBtn.style.display = 'inline-block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+  }
 
-    if (confirmPassword !== undefined && password !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
-      return;
-    }
-
-    try {
-      const res = await fetch(`${BASE_URL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
-      });
-
-      const data = await res.json();
-      alert(data.msg);
-
-      if (res.ok) {
-        window.location.href = 'login.html';
-      }
-    } catch (err) {
-      alert('❌ 요청 실패: ' + err.message);
-    }
-  });
-}
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('token');
+      alert('로그아웃 되었습니다.');
+      window.location.reload();
+    });
+  }
+});
 
 // ✅ 로그인 처리
 const loginForm = document.getElementById('login-form');
@@ -62,6 +50,41 @@ if (loginForm) {
       }
     } catch (error) {
       alert('로그인 요청 실패: ' + error.message);
+    }
+  });
+}
+
+// ✅ 회원가입 처리
+const registerForm = document.getElementById('register-form');
+if (registerForm) {
+  registerForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm-password')?.value;
+
+    if (confirmPassword && password !== confirmPassword) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${BASE_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await res.json();
+      alert(data.msg);
+
+      if (res.ok) {
+        window.location.href = 'login.html';
+      }
+    } catch (err) {
+      alert('❌ 요청 실패: ' + err.message);
     }
   });
 }

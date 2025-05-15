@@ -3,31 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>uniq 커뮤니티</title>
+  <title>UNIQ 커뮤니티</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .post { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #ccc; }
+    .logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
+    .btn { padding: 6px 12px; background-color: #3897f0; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; }
+    .post { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff; }
     input, textarea { display: block; margin: 10px 0; padding: 10px; width: 100%; max-width: 500px; }
-    button { padding: 10px 20px; cursor: pointer; }
+    button[type="submit"] { padding: 10px 20px; cursor: pointer; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
-    .tab-list li { display: inline; margin-right: 15px; cursor: pointer; }
+    .tab-list li { display: inline-block; margin-right: 15px; cursor: pointer; }
     .tab-item.active a { font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- 헤더 영역 -->
+  <!-- 헤더 -->
   <header>
-    <div class="header-left">
-      <button class="menu-btn">메뉴</button>
-    </div>
-    <div class="header-center">
-      <a href="#" class="logo">uniq</a>
-    </div>
-    <div class="header-right">
-      <a href="login.html" class="btn">로그인</a>
+    <a href="index.html" class="logo">UNIQ</a>
+    <div>
+      <a href="login.html" id="login-btn" class="btn">로그인</a>
+      <button id="logout-btn" class="btn" style="display: none;">로그아웃</button>
     </div>
   </header>
 
@@ -46,14 +45,16 @@
     <div id="new-posts" class="tab-pane active">
       <h2>최신 글</h2>
       <div id="postList"></div>
-      <button onclick="loadPosts()">글 불러오기</button>
     </div>
+
     <div id="real-time-popular" class="tab-pane">
       <p>실시간 인기글 표시 예정</p>
     </div>
+
     <div id="weekly-popular" class="tab-pane">
       <p>주간 인기글 표시 예정</p>
     </div>
+
     <div id="write-post" class="tab-pane">
       <h2>글쓰기</h2>
       <form id="postForm">
@@ -66,9 +67,31 @@
   </div>
 
   <script>
-    const serverURL = "https://vscode-dev-1.onrender.com"; // Render 서버 주소로 변경하세요
+    const serverURL = "https://vscode-dev-1.onrender.com";
 
-    // 탭 전환 로직
+    // 로그인 상태 확인 및 버튼 토글
+    function updateAuthUI() {
+      const token = localStorage.getItem("token");
+      const loginBtn = document.getElementById("login-btn");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      if (token) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+      } else {
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+      }
+    }
+
+    // 로그아웃 처리
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      alert("로그아웃 되었습니다.");
+      location.reload();
+    });
+
+    // 탭 전환
     document.querySelectorAll(".tab-item").forEach(tab => {
       tab.addEventListener("click", function (e) {
         e.preventDefault();
@@ -83,19 +106,31 @@
     // 글쓰기 제출
     document.getElementById("postForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        location.href = "login.html";
+        return;
+      }
+
       const title = document.getElementById("post_title").value;
       const content = document.getElementById("post_content").value;
       const author = document.getElementById("post_author").value;
 
       const res = await fetch(`${serverURL}/write`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({ title, content, author })
       });
 
       const data = await res.json();
       alert(data.msg || "글이 등록되었습니다.");
       document.getElementById("postForm").reset();
+      loadPosts(); // 글 새로고침
     });
 
     // 글 불러오기
@@ -117,8 +152,11 @@
       });
     }
 
-    // 페이지 로드 시 자동 실행 (선택)
-    window.onload = loadPosts;
+    // 초기 실행
+    window.onload = () => {
+      updateAuthUI();
+      loadPosts();
+    };
   </script>
 </body>
 </html>
