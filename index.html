@@ -4,8 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UNIQ 커뮤니티</title>
+  <link rel="stylesheet" href="styles.css" />
   <style>
-    body { font-family: sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
     header {
       position: relative;
       height: 60px;
@@ -16,6 +23,7 @@
       border-bottom: 1px solid #ccc;
       background-color: #fff;
     }
+
     .logo {
       position: absolute;
       left: 50%;
@@ -25,6 +33,7 @@
       color: #333;
       text-decoration: none;
     }
+
     .btn {
       padding: 6px 12px;
       background-color: #3897f0;
@@ -35,23 +44,72 @@
       text-decoration: none;
       margin-left: 10px;
     }
-    .tabs, .tab-content { padding: 20px; }
-    .tab-list { display: flex; gap: 15px; list-style: none; padding: 0; }
-    .tab-item a { text-decoration: none; color: #333; }
-    .tab-item.active a { font-weight: bold; color: #3897f0; }
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
+
     .post {
-      background: #fff;
       border: 1px solid #ccc;
       padding: 15px;
-      margin-bottom: 15px;
+      margin: 10px 0;
       border-radius: 8px;
+      background: #fff;
+    }
+
+    input, textarea {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    button[type="submit"] {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 20px;
+    }
+
+    .tab-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 15px;
+    }
+
+    .tab-list li {
+      cursor: pointer;
+    }
+
+    .tab-item.active a {
+      font-weight: bold;
+      color: #3897f0;
+    }
+
+    .tab-item a {
+      text-decoration: none;
+      color: #333;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    .tab-content {
+      padding: 20px;
     }
   </style>
 </head>
 <body>
 
+  <!-- 헤더 -->
   <header>
     <a href="index.html" class="logo">UNIQ</a>
     <div>
@@ -60,17 +118,29 @@
     </div>
   </header>
 
+  <!-- 탭 메뉴 -->
   <div class="tabs">
     <ul class="tab-list">
       <li class="tab-item active" data-tab="new-posts"><a href="#">NEW</a></li>
+      <li class="tab-item" data-tab="real-time-popular"><a href="#">실시간 인기글</a></li>
+      <li class="tab-item" data-tab="weekly-popular"><a href="#">주간 인기글</a></li>
       <li class="tab-item" data-tab="write-post"><a href="#">글쓰기</a></li>
     </ul>
   </div>
 
+  <!-- 탭 내용 -->
   <div class="tab-content">
     <div id="new-posts" class="tab-pane active">
       <h2>최신 글</h2>
       <div id="postList"></div>
+    </div>
+
+    <div id="real-time-popular" class="tab-pane">
+      <p>실시간 인기글 표시 예정</p>
+    </div>
+
+    <div id="weekly-popular" class="tab-pane">
+      <p>주간 인기글 표시 예정</p>
     </div>
 
     <div id="write-post" class="tab-pane">
@@ -78,19 +148,28 @@
       <form id="postForm">
         <input type="text" id="post_title" placeholder="제목" required />
         <textarea id="post_content" placeholder="내용" required></textarea>
-        <input type="text" id="post_author" placeholder="작성자 이메일" required />
+        <input type="text" id="post_author" placeholder="작성자" required />
         <button type="submit">글 등록</button>
       </form>
     </div>
   </div>
 
+  <!-- JS -->
   <script>
     const serverURL = "https://vscode-dev-1.onrender.com";
 
     function updateAuthUI() {
       const token = localStorage.getItem("token");
-      document.getElementById("login-btn").style.display = token ? "none" : "inline-block";
-      document.getElementById("logout-btn").style.display = token ? "inline-block" : "none";
+      const loginBtn = document.getElementById("login-btn");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      if (token) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+      } else {
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+      }
     }
 
     document.getElementById("logout-btn").addEventListener("click", () => {
@@ -138,15 +217,18 @@
       loadPosts();
     });
 
-    async function deletePost(id) {
+    async function deletePost(postId) {
       const token = localStorage.getItem("token");
-      if (!token) return alert("로그인 후 이용하세요.");
+      if (!token) return alert("로그인이 필요합니다.");
 
-      if (!confirm("정말 삭제하시겠습니까?")) return;
+      const ok = confirm("정말 삭제하시겠습니까?");
+      if (!ok) return;
 
-      const res = await fetch(`${serverURL}/posts/${id}`, {
+      const res = await fetch(`${serverURL}/posts/${postId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       });
 
       const data = await res.json();
@@ -160,7 +242,16 @@
       const container = document.getElementById("postList");
       container.innerHTML = "";
 
-      const user = JSON.parse(atob((localStorage.getItem('token') || "").split('.')[1] || '{}')).email;
+      let currentUser = "";
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          currentUser = payload.email;
+        } catch (e) {
+          console.log("토큰 파싱 오류");
+        }
+      }
 
       posts.forEach(post => {
         const div = document.createElement("div");
@@ -168,8 +259,8 @@
         div.innerHTML = `
           <h3>${post.title}</h3>
           <p>${post.content}</p>
-          <small>작성자: ${post.author} | ${new Date(post.createdAt).toLocaleString()}</small><br/>
-          ${user === post.author ? `<button onclick="deletePost('${post._id}')">삭제</button>` : ""}
+          <small>작성자: ${post.author} | 날짜: ${new Date(post.createdAt).toLocaleString()}</small>
+          ${currentUser === post.author ? `<br/><button onclick="deletePost('${post._id}')">삭제</button>` : ""}
         `;
         container.appendChild(div);
       });
