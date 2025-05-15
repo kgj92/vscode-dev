@@ -38,7 +38,7 @@
 
       posts.forEach(post => {
         const a = document.createElement('a');
-        a.href = `post-detail.html?id=${post._id}`;
+        a.href = `post-detail.html?id=${post._id}`;  // 상세 페이지 링크
         a.className = 'post-link';
         a.textContent = post.title;
         container.appendChild(a);

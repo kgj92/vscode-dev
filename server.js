@@ -100,3 +100,13 @@ app.listen(PORT, () => {
   console.log(`서버 실행 중: http://localhost:${PORT}`);
 });
 
+app.get('/posts/:id', async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ msg: '게시글이 없습니다.' });
+    res.json(post);
+  } catch {
+    res.status(400).json({ msg: '잘못된 요청입니다.' });
+  }
+});
+
