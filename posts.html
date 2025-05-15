@@ -8,15 +8,18 @@
     body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
     a.post-link { 
       display: block; 
-      padding: 10px; 
+      padding: 12px 16px; 
       margin-bottom: 10px; 
       background: #fff; 
       border: 1px solid #ccc; 
       border-radius: 6px; 
       text-decoration: none; 
       color: #333;
+      font-weight: bold;
     }
-    a.post-link:hover { background: #e6f0ff; }
+    a.post-link:hover {
+      background-color: #f0f8ff;
+    }
   </style>
 </head>
 <body>
@@ -27,22 +30,25 @@
     const serverURL = 'https://vscode-dev-1.onrender.com';
 
     async function loadPosts() {
-      const res = await fetch(`${serverURL}/posts`);
-      if (!res.ok) {
-        document.getElementById('postList').textContent = '글을 불러올 수 없습니다.';
-        return;
-      }
-      const posts = await res.json();
-      const container = document.getElementById('postList');
-      container.innerHTML = '';
+      try {
+        const res = await fetch(`${serverURL}/posts`);
+        if (!res.ok) throw new Error('서버 응답 오류');
 
-      posts.forEach(post => {
-        const a = document.createElement('a');
-        a.href = `post-detail.html?id=${post._id}`;  // 상세 페이지 링크
-        a.className = 'post-link';
-        a.textContent = post.title;
-        container.appendChild(a);
-      });
+        const posts = await res.json();
+        const container = document.getElementById('postList');
+        container.innerHTML = '';
+
+        posts.forEach(post => {
+          const a = document.createElement('a');
+          a.href = `post-detail.html?id=${post._id}`;
+          a.className = 'post-link';
+          a.textContent = post.title;
+          container.appendChild(a);
+        });
+      } catch (err) {
+        document.getElementById('postList').textContent = '글을 불러올 수 없습니다.';
+        console.error(err);
+      }
     }
 
     window.onload = loadPosts;
