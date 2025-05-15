@@ -110,5 +110,3 @@ app.get('/posts/:id', async (req, res) => {
     res.status(400).json({ msg: '잘못된 요청입니다.' });
   }
 });
-
-res.json({ token, username: user.username });
