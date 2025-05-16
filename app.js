@@ -107,6 +107,8 @@ if (postForm) {
     const title = document.getElementById('title').value;
     const content = document.getElementById('content').value;
 
+    console.log('📤 글 등록 시도:', { title, content, author: '익명' });
+
     try {
       const res = await fetch('https://vscode-dev-1.onrender.com/write', {
         method: 'POST',
@@ -114,14 +116,11 @@ if (postForm) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          title,
-          content,
-          author: '익명' // ✅ 작성자는 고정값
-        })
+        body: JSON.stringify({ title, content, author: '익명' })
       });
 
       const data = await res.json();
+      console.log('📥 서버 응답:', data);
 
       if (res.ok) {
         alert('글이 등록되었습니다.');
@@ -131,6 +130,7 @@ if (postForm) {
       }
     } catch (error) {
       alert('글쓰기 요청 실패: ' + error.message);
+      console.error('❌ 오류:', error);
     }
   });
 }
