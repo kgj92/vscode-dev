@@ -1,0 +1,7 @@
+[build]
+  publish = "." # index.html 등이 있는 루트 디렉토리
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
