@@ -98,7 +98,7 @@ if (postForm) {
     e.preventDefault();
 
     const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username'); // ✅ 자동 작성자
+    const username = localStorage.getItem('username');
 
     if (!token || !username) {
       alert('로그인이 필요합니다.');
@@ -110,13 +110,13 @@ if (postForm) {
     const content = document.getElementById('content').value;
 
     try {
-      const res = await fetch(`${BASE_URL}/write`, {
+      const res = await fetch('https://vscode-dev-1.onrender.com/write', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, content, author: username }) // ✅ 자동 작성자 전송
+        body: JSON.stringify({ title, content, author: username })
       });
 
       const data = await res.json();
