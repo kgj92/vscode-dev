@@ -98,9 +98,7 @@ if (postForm) {
     e.preventDefault();
 
     const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
-
-    if (!token || !username) {
+    if (!token) {
       alert('로그인이 필요합니다.');
       window.location.href = 'login.html';
       return;
@@ -116,13 +114,17 @@ if (postForm) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, content, author: username })
+        body: JSON.stringify({
+          title,
+          content,
+          author: '익명' // ✅ 작성자는 고정값
+        })
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        alert('게시글이 등록되었습니다.');
+        alert('글이 등록되었습니다.');
         window.location.href = 'index.html';
       } else {
         alert(data.msg || '글 등록 실패');
@@ -132,3 +134,4 @@ if (postForm) {
     }
   });
 }
+
