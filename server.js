@@ -140,3 +140,30 @@ app.get('/posts/:id', async (req, res) => {
     res.status(400).json({ msg: '잘못된 요청입니다.' });
   }
 });
+// DELETE /posts/:id
+app.delete('/posts/:id', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ msg: "토큰이 없습니다." });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userEmail = decoded.email;
+
+    const user = await User.findOne({ email: userEmail });
+    if (!user) return res.status(401).json({ msg: "유효하지 않은 사용자입니다." });
+
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ msg: "게시글을 찾을 수 없습니다." });
+
+    if (post.author !== user.username) {
+      return res.status(403).json({ msg: "작성자만 삭제할 수 있습니다." });
+    }
+
+    await Post.findByIdAndDelete(req.params.id);
+    res.json({ msg: "삭제 완료" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "서버 오류" });
+  }
+});
