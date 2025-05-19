@@ -108,6 +108,35 @@
       color: #777;
       margin-top: 6px;
     }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    button[type="submit"] {
+      background-color: #3897f0;
+      color: white;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #2f80ed;
+    }
   </style>
 </head>
 <body>
@@ -133,33 +162,37 @@
 
   <!-- 탭 내용 -->
   <div class="tab-content">
+    <!-- 최신 글 -->
     <div id="new-posts" class="tab-pane active">
       <h2>최신 글</h2>
       <div id="postList"></div>
     </div>
 
+    <!-- 실시간 인기 -->
     <div id="real-time-popular" class="tab-pane">
       <p>실시간 인기글 표시 예정</p>
     </div>
 
+    <!-- 주간 인기 -->
     <div id="weekly-popular" class="tab-pane">
       <p>주간 인기글 표시 예정</p>
     </div>
 
+    <!-- 글쓰기 -->
     <div id="write-post" class="tab-pane">
       <h2>글쓰기</h2>
-      <form id="post-form">
-        <input type="text" id="post_title" placeholder="제목" required />
-        <textarea id="post_content" placeholder="내용" required></textarea>
+      <form id="postForm" style="max-width: 600px; margin-top: 20px;">
+        <input type="text" id="post_title" placeholder="제목을 입력하세요" required />
+        <textarea id="post_content" placeholder="내용을 입력하세요" required></textarea>
         <button type="submit">글 등록</button>
       </form>
     </div>
   </div>
 
+  <!-- 스크립트 -->
   <script>
     const serverURL = 'https://vscode-dev-1.onrender.com';
 
-    // 로그인 상태 확인
     function updateAuthUI() {
       const token = localStorage.getItem("token");
       const loginBtn = document.getElementById("login-btn");
@@ -174,9 +207,9 @@
       }
     }
 
-    // 로그아웃
     document.getElementById("logout-btn").addEventListener("click", () => {
       localStorage.removeItem("token");
+      localStorage.removeItem("username");
       alert("로그아웃 되었습니다.");
       location.reload();
     });
@@ -194,19 +227,18 @@
     });
 
     // 글쓰기 처리
-    document.getElementById("post-form").addEventListener("submit", async (e) => {
+    document.getElementById("postForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const token = localStorage.getItem("token");
       if (!token) {
         alert("로그인이 필요합니다.");
-        window.location.href = "login.html";
+        location.href = "login.html";
         return;
       }
 
       const title = document.getElementById("post_title").value;
       const content = document.getElementById("post_content").value;
-      const author = "익명"; // 고정값
 
       try {
         const res = await fetch(`${serverURL}/write`, {
@@ -215,19 +247,24 @@
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify({ title, content, author })
+          body: JSON.stringify({ title, content, author: "익명" })
         });
 
         const data = await res.json();
         alert(data.msg || "글이 등록되었습니다.");
-        document.getElementById("post-form").reset();
-        loadPosts();
+
+        if (res.ok) {
+          document.getElementById("postForm").reset();
+          document.querySelector('[data-tab="new-posts"]').click();
+          loadPosts();
+        }
       } catch (err) {
-        alert("글 등록 실패: " + err.message);
+        alert("글 등록 중 오류가 발생했습니다.");
+        console.error(err);
       }
     });
 
-    // 글 목록 로딩
+    // 글 목록 불러오기
     async function loadPosts() {
       const res = await fetch(`${serverURL}/posts`);
       const posts = await res.json();
