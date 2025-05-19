@@ -5,42 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UNIQ 커뮤니티 - 글 상세</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      max-width: 700px;
-      margin: auto;
-      background: #f9f9f9;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    .content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-    }
-
-    .meta {
-      margin-top: 15px;
-      color: #666;
-      font-size: 14px;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 20px;
-      color: #3897f0;
-      text-decoration: none;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
-    }
-
+    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; max-width: 700px; margin: auto; }
+    .content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
+    .meta { margin-top: 15px; color: #666; font-size: 14px; }
+    .back-link { margin-bottom: 20px; display: inline-block; color: #3897f0; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
     #deleteBtn {
       margin-top: 20px;
       padding: 8px 16px;
@@ -51,16 +20,11 @@
       cursor: pointer;
       display: none;
     }
-
-    #deleteBtn:hover {
-      background-color: #c0392b;
-    }
   </style>
 </head>
 <body>
 
   <a href="javascript:history.back()" class="back-link">&lt; 뒤로가기</a>
-
   <h1 id="postTitle">불러오는 중...</h1>
   <div id="postContent" class="content"></div>
   <div id="postMeta" class="meta"></div>
@@ -70,30 +34,20 @@
   <script>
     const serverURL = 'https://vscode-dev-1.onrender.com';
     const postId = new URLSearchParams(window.location.search).get('id');
-
     const deleteBtn = document.getElementById("deleteBtn");
 
     async function loadPost(id) {
-      try {
-        const res = await fetch(`${serverURL}/posts/${id}`);
-        if (!res.ok) {
-          document.getElementById("postTitle").textContent = "글을 불러올 수 없습니다.";
-          return;
-        }
+      const res = await fetch(`${serverURL}/posts/${id}`);
+      const post = await res.json();
 
-        const post = await res.json();
+      document.getElementById("postTitle").textContent = post.title;
+      document.getElementById("postContent").textContent = post.content;
+      document.getElementById("postMeta").textContent =
+        `작성자: ${post.author} | 작성일: ${new Date(post.createdAt).toLocaleString()}`;
 
-        document.getElementById("postTitle").textContent = post.title;
-        document.getElementById("postContent").textContent = post.content;
-        document.getElementById("postMeta").textContent =
-          `작성자: ${post.author} | 작성일: ${new Date(post.createdAt).toLocaleString()}`;
-
-        const currentUser = localStorage.getItem("username");
-        if (currentUser && currentUser === post.author) {
-          deleteBtn.style.display = "inline-block";
-        }
-      } catch (error) {
-        alert("게시글을 불러오는 데 실패했습니다.");
+      const username = localStorage.getItem("username");
+      if (username === post.author) {
+        deleteBtn.style.display = "inline-block";
       }
     }
 
@@ -101,8 +55,6 @@
       if (!confirm("정말 삭제하시겠습니까?")) return;
 
       const token = localStorage.getItem("token");
-      if (!token) return alert("로그인이 필요합니다.");
-
       const res = await fetch(`${serverURL}/posts/${postId}`, {
         method: "DELETE",
         headers: {
@@ -111,7 +63,6 @@
       });
 
       const data = await res.json();
-
       if (res.ok) {
         alert("삭제 완료");
         window.location.href = "index.html";
@@ -122,6 +73,5 @@
 
     loadPost(postId);
   </script>
-
 </body>
 </html>

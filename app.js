@@ -91,7 +91,7 @@ if (registerForm) {
   });
 }
 
-// ✅ 글쓰기 처리 (중복 제거, 오류 수정)
+// ✅ 글쓰기 처리
 const postForm = document.getElementById('post-form');
 if (postForm) {
   postForm.addEventListener('submit', async function (e) {
@@ -110,7 +110,7 @@ if (postForm) {
     console.log('📤 글 등록 시도:', { title, content, author: '익명' });
 
     try {
-      const res = await fetch('https://vscode-dev-1.onrender.com/write', {
+      const res = await fetch(`${BASE_URL}/write`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,3 +135,39 @@ if (postForm) {
   });
 }
 
+// ✅ 글 삭제 처리 (post-detail.html에서 실행)
+const deleteBtn = document.getElementById('deleteBtn');
+if (deleteBtn) {
+  deleteBtn.addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    const postId = new URLSearchParams(window.location.search).get('id');
+
+    if (!token || !postId) {
+      alert("삭제할 수 없습니다. 로그인 또는 글 정보가 없습니다.");
+      return;
+    }
+
+    const confirmDelete = confirm("정말 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("삭제 완료");
+        window.location.href = "index.html";
+      } else {
+        alert(data.msg || "삭제 실패");
+      }
+    } catch (err) {
+      alert("삭제 요청 실패: " + err.message);
+    }
+  });
+}
