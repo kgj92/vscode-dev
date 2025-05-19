@@ -148,7 +148,7 @@
 
     <div id="write-post" class="tab-pane">
       <h2>글쓰기</h2>
-      <form id="postForm">
+      <form id="post-form">
         <input type="text" id="post_title" placeholder="제목" required />
         <textarea id="post_content" placeholder="내용" required></textarea>
         <button type="submit">글 등록</button>
@@ -159,7 +159,7 @@
   <script>
     const serverURL = 'https://vscode-dev-1.onrender.com';
 
-    // 로그인 상태 확인 및 버튼 토글
+    // 로그인 상태 확인
     function updateAuthUI() {
       const token = localStorage.getItem("token");
       const loginBtn = document.getElementById("login-btn");
@@ -193,37 +193,41 @@
       });
     });
 
-    // 글쓰기
-    document.getElementById("postForm").addEventListener("submit", async (e) => {
+    // 글쓰기 처리
+    document.getElementById("post-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const token = localStorage.getItem("token");
       if (!token) {
         alert("로그인이 필요합니다.");
-        location.href = "login.html";
+        window.location.href = "login.html";
         return;
       }
 
       const title = document.getElementById("post_title").value;
       const content = document.getElementById("post_content").value;
-      const author = document.getElementById("post_author").value;
+      const author = "익명"; // 고정값
 
-      const res = await fetch(`${serverURL}/write`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ title, content, author })
-      });
+      try {
+        const res = await fetch(`${serverURL}/write`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ title, content, author })
+        });
 
-      const data = await res.json();
-      alert(data.msg || "글이 등록되었습니다.");
-      document.getElementById("postForm").reset();
-      loadPosts();
+        const data = await res.json();
+        alert(data.msg || "글이 등록되었습니다.");
+        document.getElementById("post-form").reset();
+        loadPosts();
+      } catch (err) {
+        alert("글 등록 실패: " + err.message);
+      }
     });
 
-    // 글 목록 불러오기 (제목 + 날짜만)
+    // 글 목록 로딩
     async function loadPosts() {
       const res = await fetch(`${serverURL}/posts`);
       const posts = await res.json();
@@ -249,7 +253,6 @@
       });
     }
 
-    // 실행
     window.onload = () => {
       updateAuthUI();
       loadPosts();
