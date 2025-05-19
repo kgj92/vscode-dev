@@ -5,11 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UNIQ 커뮤니티 - 글 상세</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; max-width: 700px; margin: auto; }
-    .content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
-    .meta { margin-top: 15px; color: #666; font-size: 14px; }
-    .back-link { margin-bottom: 20px; display: inline-block; color: #3897f0; text-decoration: none; }
-    .back-link:hover { text-decoration: underline; }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+
+    .meta {
+      margin-top: 15px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .back-link {
+      margin-bottom: 20px;
+      display: inline-block;
+      color: #3897f0;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
     #deleteBtn {
       margin-top: 20px;
       padding: 8px 16px;
@@ -25,6 +52,7 @@
 <body>
 
   <a href="javascript:history.back()" class="back-link">&lt; 뒤로가기</a>
+
   <h1 id="postTitle">불러오는 중...</h1>
   <div id="postContent" class="content"></div>
   <div id="postMeta" class="meta"></div>
@@ -32,45 +60,67 @@
   <button id="deleteBtn">글 삭제</button>
 
   <script>
-    const serverURL = 'https://vscode-dev-1.onrender.com';
+    const BASE_URL = 'https://vscode-dev-1.onrender.com';
     const postId = new URLSearchParams(window.location.search).get('id');
-    const deleteBtn = document.getElementById("deleteBtn");
+    const deleteBtn = document.getElementById('deleteBtn');
 
+    // 글 데이터 불러오기
     async function loadPost(id) {
-      const res = await fetch(`${serverURL}/posts/${id}`);
-      const post = await res.json();
+      try {
+        const res = await fetch(`${BASE_URL}/posts/${id}`);
+        const post = await res.json();
 
-      document.getElementById("postTitle").textContent = post.title;
-      document.getElementById("postContent").textContent = post.content;
-      document.getElementById("postMeta").textContent =
-        `작성자: ${post.author} | 작성일: ${new Date(post.createdAt).toLocaleString()}`;
+        document.getElementById('postTitle').textContent = post.title;
+        document.getElementById('postContent').textContent = post.content;
+        document.getElementById('postMeta').textContent =
+          `작성자: ${post.author} | 작성일: ${new Date(post.createdAt).toLocaleString()}`;
 
-      const username = localStorage.getItem("username");
-      if (username === post.author) {
-        deleteBtn.style.display = "inline-block";
+        // 삭제 버튼 조건부 표시
+        const username = localStorage.getItem('username');
+        if (username && username === post.author) {
+          deleteBtn.style.display = 'inline-block';
+        }
+
+      } catch (err) {
+        document.getElementById('postTitle').textContent = '글을 불러올 수 없습니다.';
+        console.error(err);
       }
     }
 
-    deleteBtn.addEventListener("click", async () => {
-      if (!confirm("정말 삭제하시겠습니까?")) return;
+    // 삭제 처리
+    deleteBtn.addEventListener('click', async () => {
+      const confirmDelete = confirm('정말 이 글을 삭제하시겠습니까?');
+      if (!confirmDelete) return;
 
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${serverURL}/posts/${postId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/posts/${postId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert('삭제되었습니다.');
+          window.location.href = 'index.html';
+        } else {
+          alert(data.msg || '삭제 실패');
         }
-      });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert("삭제 완료");
-        window.location.href = "index.html";
-      } else {
-        alert(data.msg || "삭제 실패");
+      } catch (err) {
+        alert('삭제 요청 실패: ' + err.message);
       }
     });
 
+    // 시작
     loadPost(postId);
   </script>
 </body>
