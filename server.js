@@ -60,8 +60,9 @@ app.post('/login', async (req, res) => {
 // 글쓰기
 app.post('/write', async (req, res) => {
   const { title, content, author } = req.body;
+
   if (!title || !content || !author) {
-    return res.status(400).json({ msg: '필수 항목이 누락되었습니다.' });
+    return res.status(400).json({ msg: '제목, 내용, 작성자가 필요합니다.' });
   }
 
   try {
@@ -69,9 +70,11 @@ app.post('/write', async (req, res) => {
     await post.save();
     res.json({ msg: '글 등록 완료' });
   } catch (err) {
+    console.error('글 저장 실패:', err);
     res.status(500).json({ msg: '서버 오류 발생' });
   }
 });
+
 
 
 // 글 목록
