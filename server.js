@@ -77,29 +77,54 @@ app.get('/posts/:id', async (req, res) => {
 
 // 글 삭제 (작성자만 가능)
 app.delete('/posts/:id', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  const { id } = req.params;
+
+  if (!token) return res.status(401).json({ msg: '인증 필요' });
+
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ msg: "로그인이 필요합니다." });
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ email: decoded.email });
-    if (!user) return res.status(401).json({ msg: "사용자 정보가 유효하지 않습니다." });
+    const post = await Post.findById(id);
+    if (!post) return res.status(404).json({ msg: '게시글을 찾을 수 없음' });
 
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ msg: "게시글이 존재하지 않습니다." });
-
-    if (post.author !== user.username) {
-      return res.status(403).json({ msg: "작성자만 글을 삭제할 수 있습니다." });
+    if (post.author !== decoded.username && decoded.username !== 'admin') {
+      return res.status(403).json({ msg: '삭제 권한이 없습니다' });
     }
 
-    await Post.findByIdAndDelete(req.params.id);
-    res.json({ msg: "삭제 완료" });
-
+    await Post.findByIdAndDelete(id);
+    res.json({ msg: '삭제 완료' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "서버 오류" });
+    res.status(400).json({ msg: '삭제 실패', error: err.message });
   }
 });
+
+// 게시글 수정
+app.put('/posts/:id', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  const { id } = req.params;
+  const { title, content } = req.body;
+
+  if (!token) return res.status(401).json({ msg: '인증 필요' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const post = await Post.findById(id);
+    if (!post) return res.status(404).json({ msg: '게시글 없음' });
+
+    if (post.author !== decoded.username && decoded.username !== 'admin') {
+      return res.status(403).json({ msg: '수정 권한 없음' });
+    }
+
+    post.title = title;
+    post.content = content;
+    await post.save();
+
+    res.json({ msg: '수정 완료' });
+  } catch (err) {
+    res.status(400).json({ msg: '수정 실패', error: err.message });
+  }
+});
+
 
 // 기본 페이지
 app.get('/', (req, res) => {

@@ -37,14 +37,21 @@
       text-decoration: underline;
     }
 
-    #deleteBtn {
+    .actions {
       margin-top: 20px;
+    }
+
+    .btn {
       padding: 8px 16px;
-      background-color: #e74c3c;
-      color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      margin-right: 10px;
+    }
+
+    #deleteBtn {
+      background-color: #e74c3c;
+      color: white;
       display: none;
     }
   </style>
@@ -57,14 +64,15 @@
   <div id="postContent" class="content"></div>
   <div id="postMeta" class="meta"></div>
 
-  <button id="deleteBtn">글 삭제</button>
+  <div class="actions">
+    <button id="deleteBtn" class="btn">글 삭제</button>
+  </div>
 
   <script>
     const BASE_URL = 'https://vscode-dev-1.onrender.com';
     const postId = new URLSearchParams(window.location.search).get('id');
     const deleteBtn = document.getElementById('deleteBtn');
 
-    // 글 데이터 불러오기
     async function loadPost(id) {
       try {
         const res = await fetch(`${BASE_URL}/posts/${id}`);
@@ -75,7 +83,6 @@
         document.getElementById('postMeta').textContent =
           `작성자: ${post.author} | 작성일: ${new Date(post.createdAt).toLocaleString()}`;
 
-        // 삭제 버튼 조건부 표시
         const username = localStorage.getItem('username');
         if (username && username === post.author) {
           deleteBtn.style.display = 'inline-block';
@@ -87,10 +94,8 @@
       }
     }
 
-    // 삭제 처리
     deleteBtn.addEventListener('click', async () => {
-      const confirmDelete = confirm('정말 이 글을 삭제하시겠습니까?');
-      if (!confirmDelete) return;
+      if (!confirm('정말 이 글을 삭제하시겠습니까?')) return;
 
       const token = localStorage.getItem('token');
       if (!token) {
@@ -114,13 +119,11 @@
         } else {
           alert(data.msg || '삭제 실패');
         }
-
       } catch (err) {
         alert('삭제 요청 실패: ' + err.message);
       }
     });
 
-    // 시작
     loadPost(postId);
   </script>
 </body>
