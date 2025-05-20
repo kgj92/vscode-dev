@@ -44,15 +44,18 @@ app.post('/register', async (req, res) => {
   res.json({ msg: '회원가입 완료' });
 });
 
-// 로그인
+// 로그인 API (server.js)
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email, password });
   if (!user) return res.json({ msg: '이메일 또는 비밀번호가 틀렸습니다.' });
 
   const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET);
+
+  // ✅ 사용자 이름도 함께 응답
   res.json({ token, username: user.username });
 });
+
 
 // 글쓰기
 app.post('/write', async (req, res) => {

@@ -98,7 +98,9 @@ if (postForm) {
     e.preventDefault();
 
     const token = localStorage.getItem('token');
-    if (!token) {
+    const username = localStorage.getItem('username'); // 작성자 이름
+
+    if (!token || !username) {
       alert('로그인이 필요합니다.');
       window.location.href = 'login.html';
       return;
@@ -107,8 +109,6 @@ if (postForm) {
     const title = document.getElementById('title').value;
     const content = document.getElementById('content').value;
 
-    console.log('📤 글 등록 시도:', { title, content, author: '익명' });
-
     try {
       const res = await fetch(`${BASE_URL}/write`, {
         method: 'POST',
@@ -116,12 +116,10 @@ if (postForm) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, content, author: username })
+        body: JSON.stringify({ title, content, author: username }) // ✅ 작성자 저장
       });
 
       const data = await res.json();
-      console.log('📥 서버 응답:', data);
-
       if (res.ok) {
         alert('글이 등록되었습니다.');
         window.location.href = 'index.html';
@@ -130,10 +128,10 @@ if (postForm) {
       }
     } catch (error) {
       alert('글쓰기 요청 실패: ' + error.message);
-      console.error('❌ 오류:', error);
     }
   });
 }
+
 
 // ✅ 글 삭제 처리 (post-detail.html에서 실행)
 const deleteBtn = document.getElementById('deleteBtn');
