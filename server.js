@@ -57,16 +57,21 @@ app.post('/login', async (req, res) => {
 });
 
 
-// 글쓰기
 app.post('/write', async (req, res) => {
   const { title, content, author } = req.body;
 
-  if (!title || !content || !author) {
-    return res.status(400).json({ msg: '제목, 내용, 작성자가 필요합니다.' });
+  if (!title || !content) {
+    return res.status(400).json({ msg: '제목과 내용은 필수입니다.' });
   }
 
   try {
-    const post = new Post({ title, content, author });
+    const post = new Post({
+      title,
+      content,
+      author: "익명", // ✅ 서버에서 강제로 익명으로 설정 가능
+      createdAt: new Date()
+    });
+
     await post.save();
     res.json({ msg: '글 등록 완료' });
   } catch (err) {
@@ -74,6 +79,7 @@ app.post('/write', async (req, res) => {
     res.status(500).json({ msg: '서버 오류 발생' });
   }
 });
+
 
 
 

@@ -98,9 +98,7 @@ if (postForm) {
     e.preventDefault();
 
     const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username'); // 작성자 이름
-
-    if (!token || !username) {
+    if (!token) {
       alert('로그인이 필요합니다.');
       window.location.href = 'login.html';
       return;
@@ -116,7 +114,11 @@ if (postForm) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, content, author: username }) // ✅ 작성자 저장
+        body: JSON.stringify({
+          title,
+          content,
+          author: "익명"   // ✅ 항상 익명으로 저장
+        })
       });
 
       const data = await res.json();
@@ -131,7 +133,6 @@ if (postForm) {
     }
   });
 }
-
 
 // ✅ 글 삭제 처리 (post-detail.html에서 실행)
 const deleteBtn = document.getElementById('deleteBtn');
