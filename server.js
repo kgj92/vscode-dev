@@ -60,6 +60,9 @@ app.post('/login', async (req, res) => {
 app.post('/write', async (req, res) => {
   const { title, content, author } = req.body;
 
+  // 작성자 없을 경우 익명 처리
+  if (!author) author = "익명";
+
   if (!title || !content) {
     return res.status(400).json({ msg: '제목과 내용은 필수입니다.' });
   }
