@@ -92,7 +92,7 @@ if (registerForm) {
 }
 
 // ✅ 글쓰기 처리
-const postForm = document.getElementById('post-form');
+const postForm = document.getElementById("postForm");
 if (postForm) {
   postForm.addEventListener('submit', async function (e) {
     e.preventDefault();
