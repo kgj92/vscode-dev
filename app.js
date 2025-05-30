@@ -86,7 +86,7 @@ if (registerForm) {
         window.location.href = 'login.html';
       }
     } catch (err) {
-      alert('❌ 요청 실패: ' + err.message);
+      alert(' 요청 실패: ' + err.message);
     }
   });
 }
