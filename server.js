@@ -148,6 +148,20 @@ app.put('/posts/:id', async (req, res) => {
     res.status(400).json({ msg: '수정 실패', error: err.message });
   }
 });
+app.delete('/delete-account', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ msg: "토큰 없음" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    await User.deleteOne({ email: decoded.email });
+    res.json({ msg: "계정이 삭제되었습니다." });
+  } catch (err) {
+    console.error("계정 삭제 오류:", err);
+    res.status(500).json({ msg: "서버 오류" });
+  }
+});
+
 
 
 // 기본 페이지
