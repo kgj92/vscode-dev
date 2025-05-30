@@ -92,6 +92,7 @@ if (registerForm) {
 }
 
 // ✅ 글쓰기 처리
+const username = localStorage.getItem('username') || '익명'; // ❗ 기본값도 지정
 const postForm = document.getElementById("postForm");
 if (postForm) {
   postForm.addEventListener('submit', async function (e) {
