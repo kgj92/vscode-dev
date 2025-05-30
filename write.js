@@ -19,7 +19,7 @@ document.getElementById("postForm").addEventListener("submit", async (e) => {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify({ title, content, author: '익명' })
+    body: JSON.stringify({ title, content, author: username })
   });
 
   const data = await res.json();
