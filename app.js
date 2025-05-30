@@ -117,7 +117,7 @@ if (postForm) {
         body: JSON.stringify({
           title,
           content,
-          author: "익명"   // ✅ 항상 익명으로 저장
+          author: username   // ✅ 항상 익명으로 저장
         })
       });
 

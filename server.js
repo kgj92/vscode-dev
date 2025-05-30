@@ -71,7 +71,7 @@ app.post('/write', async (req, res) => {
     const post = new Post({
       title,
       content,
-      author: "익명", // ✅ 서버에서 강제로 익명으로 설정 가능
+      author: username,
       createdAt: new Date()
     });
 
